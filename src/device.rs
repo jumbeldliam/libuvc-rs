@@ -66,6 +66,20 @@ impl<'a> Drop for Device<'a> {
     }
 }
 
+pub enum KernelDriverDetatch {
+    On = 0,
+    Off = 1,
+}
+
+impl From<KernelDriverDetatch> for uvc_sys::uvc_kernel_driver_mode {
+    fn from(detatch_mode: KernelDriverDetatch) {
+        match detatch_mode {
+            KernelDriverDetatch::On => uvc_sys::uvc_kernel_driver_mode_UVC_KERNEL_DRIVER_MODE_DETATCH_ON,
+            KernelDriverDetatch::Off => uvc_sys::uvc_kernel_driver_mode_UVC_KERNEL_DRIVER_MODE_DETATCH_OFF,
+        }
+    }
+}
+
 impl<'a> Device<'a> {
     pub(crate) unsafe fn from_raw(dev: *mut uvc_device) -> Self {
         Device {
@@ -75,9 +89,12 @@ impl<'a> Device<'a> {
     }
     /// Create handle to a device
     pub fn open(&'a self) -> Result<DeviceHandle<'a>> {
+        self.open_with_driver_detatch(KernelDriverDetatch::On)
+    }
+    pub fn open_with_driver_detatch(&'a self, detatch: KernelDriverDetatch) {
         unsafe {
             let mut devh = std::mem::MaybeUninit::uninit();
-            let err = uvc_open(self.dev.as_ptr(), devh.as_mut_ptr()).into();
+            let err = uvc_open_with_driver_mode(self.dev.as_ptr(), devh.as_mut_ptr(), detatch.into()).into();
             match err {
                 Error::Success => Ok(DeviceHandle {
                     devh: NonNull::new(devh.assume_init()).unwrap(),
