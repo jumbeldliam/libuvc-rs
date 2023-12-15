@@ -72,7 +72,7 @@ pub enum KernelDriverDetatch {
 }
 
 impl From<KernelDriverDetatch> for uvc_sys::uvc_kernel_driver_mode {
-    fn from(detatch_mode: KernelDriverDetatch) {
+    fn from(detatch_mode: KernelDriverDetatch) -> uvc_sys::uvc_kernel_driver_mode {
         match detatch_mode {
             KernelDriverDetatch::On => uvc_sys::uvc_kernel_driver_mode_UVC_KERNEL_DRIVER_MODE_DETATCH_ON,
             KernelDriverDetatch::Off => uvc_sys::uvc_kernel_driver_mode_UVC_KERNEL_DRIVER_MODE_DETATCH_OFF,
@@ -91,7 +91,9 @@ impl<'a> Device<'a> {
     pub fn open(&'a self) -> Result<DeviceHandle<'a>> {
         self.open_with_driver_detatch(KernelDriverDetatch::On)
     }
-    pub fn open_with_driver_detatch(&'a self, detatch: KernelDriverDetatch) {
+
+    /// Create handle to a device specifying whether to detatch kernel drivers
+    pub fn open_with_driver_detatch(&'a self, detatch: KernelDriverDetatch) -> Result<DeviceHandle<'a>> {
         unsafe {
             let mut devh = std::mem::MaybeUninit::uninit();
             let err = uvc_open_with_driver_mode(self.dev.as_ptr(), devh.as_mut_ptr(), detatch.into()).into();
