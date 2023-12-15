@@ -89,11 +89,11 @@ impl<'a> Device<'a> {
     }
     /// Create handle to a device
     pub fn open(&'a self) -> Result<DeviceHandle<'a>> {
-        self.open_with_driver_detatch(KernelDriverDetatch::On)
+        self.open_with_driver_mode(KernelDriverDetatch::On)
     }
 
     /// Create handle to a device specifying whether to detatch kernel drivers
-    pub fn open_with_driver_detatch(&'a self, detatch: KernelDriverDetatch) -> Result<DeviceHandle<'a>> {
+    pub fn open_with_driver_mode(&'a self, detatch: KernelDriverDetatch) -> Result<DeviceHandle<'a>> {
         unsafe {
             let mut devh = std::mem::MaybeUninit::uninit();
             let err = uvc_open_with_driver_mode(self.dev.as_ptr(), devh.as_mut_ptr(), detatch.into()).into();

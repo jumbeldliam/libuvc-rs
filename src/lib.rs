@@ -76,7 +76,7 @@ pub use context::Context;
 pub use controls::{AutoExposureMode, AutoExposurePriority, ScanningMode};
 pub use device::{
     DescriptionSubtype, Device, DeviceDescription, DeviceHandle, DeviceList, FormatDescriptor,
-    FormatDescriptors, FrameDescriptor, FrameDescriptors,
+    FormatDescriptors, FrameDescriptor, FrameDescriptors, KernelDriverDetatch,
 };
 pub use error::{Error, Result};
 pub use formats::{FrameFormat, StreamFormat};
